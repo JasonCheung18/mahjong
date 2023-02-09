@@ -19,11 +19,13 @@ public class Mj {
     private List<String> ghost_brand;
 
     // 牌山的初始化
+    // 麻将牌的组成方式是【花色 + 数字】，如果是字牌则直接是直接名字，输出的时候采用格式化来将数字转化为正常的麻将
     public Mj(int method) {
         // 川麻
         this.method = method;
         if (this.method == 1) {
             this.default_brand = new ArrayList<>();
+            // 没有字牌，只添加花色牌，类型为1=筒，2=索，3=万
             for (int i = 1; i <= color.length; i++) {
                 for (int j = 1; j <= number.length; j++) {
                     for (int k = 1; k <= 4; k++) {
@@ -37,6 +39,7 @@ public class Mj {
         // 广麻
         if (this.method == 2) {
             this.default_brand = new ArrayList<>();
+            // 添加花色牌，同川麻
             for (int i = 1; i <= color.length; i++) {
                 for (int j = 1; j <= number.length; j++) {
                     for (int k = 1; k <= 4; k++) {
@@ -45,6 +48,7 @@ public class Mj {
                     }
                 }
             }
+            // 添加字牌，类型为4
             for (int i = 1; i <= 7; i++) {
                 for (int k = 1; k <= 4; k++) {
                     String val = "4" + i;
@@ -53,7 +57,6 @@ public class Mj {
             }
             Collections.shuffle(this.default_brand); // 将默认排序打乱
         }
-//        printDefault_brand();
     }
 
     public void printDefault_brand() {
@@ -87,18 +90,17 @@ public class Mj {
             this.sorted_brand.addAll(this.default_brand.subList(13 * a - b, this.default_brand.size())); // 看大
             this.sorted_brand.addAll(this.default_brand.subList(0, 13 * a - b)); // 摸小
             Collections.reverse(this.sorted_brand); // 将牌放到队尾
-//          printSorted_brand();
         } else if (this.method == 2) {
             this.sorted_brand.addAll(this.default_brand.subList(17 * a - b, this.default_brand.size())); // 看大
             this.sorted_brand.addAll(this.default_brand.subList(0, 17 * a - b)); // 摸小
             Collections.reverse(this.sorted_brand); // 将牌放到队尾
-//            printSorted_brand();
         }
 
     }
 
     // 初始发牌
     public void begin(List<Player> playerList) {
+        // 丢骰子
         int dice_a = (int) (Math.random() * 6 + 1);
         int dice_b = (int) (Math.random() * 6 + 1);
         System.out.println("投掷结果为 " + dice_a + ", " + dice_b);
@@ -138,7 +140,7 @@ public class Mj {
     // 开始游戏
     public void play(List<Player> playerList) {
         int flag = 0; // 当前位置
-        get_brand(playerList, flag);
+        get_brand(playerList, flag); // 玩家开始拿牌开始游戏
     }
 
     // 翻牌确定鬼
@@ -177,7 +179,7 @@ public class Mj {
             System.out.print("牌山还剩 " + this.sorted_brand.size() + " 张牌，" + ((method == 2) ? ("鬼牌是 " + format(this.ghost_brand) + " ， ") : "")
                     + "玩家" + (flag + 1) + " 本轮摸到的牌为 ");
             format_display(current_brand);
-
+            // 将摸到的牌放到当前玩家的手牌list中
             Player current_player = playerList.get(flag);
             current_player.setHand(current_brand);
             System.out.print("玩家" + (flag + 1) + " 当前手牌为 ");
@@ -202,7 +204,7 @@ public class Mj {
         Map<String, Integer> gang_map = check_self_gang(current_player.getHand(), current_player.getShow(), current_player); // 检查玩家当前手牌能否暗杠加杠
         int choice = choose_action(gang_map.size());
         switch (choice) {
-            case 1:// 出牌弃牌
+            case 1: // 出牌弃牌
                 flag = player_forgive_discard(playerList, current_player, flag);
                 break;
             case 2: // 暗杠或补杠
